@@ -29,6 +29,10 @@ int main(void)
     // 1. Configure the RCC_CFGR register
     *pRccCfgReg &= ~(0x3 << 21); //Clear bits 21 and 22
 
+    //Configure MC01 pre-scaller to 4 so that clock generated is 4Mhz
+    *pRccCfgReg |= (1 << 25); //Datasheet Err: This is swapped in register description
+    *pRccCfgReg |= (1 << 26); //Datasheet Err: This is swapped in register description
+
     // 2. Configure PA8 to AF0 mode to behave as MC01 signal
     // a. Enable the peripheral clock for GPIOA peripheral
     uint32_t* pRCCAhb1Enr = (uint32_t*) (RCC_BASE_ADDR + 0x30);
