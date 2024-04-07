@@ -18,12 +18,31 @@
 
 #include <stdint.h>
 
-#if !defined(__SOFT_FP__) && defined(__ARM_FP)
-  #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
-#endif
+
+#define RCC_BASE_ADDR         0x40023800UL
+#define RCC_CFGR_REG_OFFSET   0x08UL
+#define RCC_CFGR_REG_ADDR     (RCC_BASE_ADDR + RCC_CFGR_REG_OFFSET)
 
 int main(void)
 {
+    uint32_t* pRccCfgReg = (uint32_t*)RCC_CFGR_REG_ADDR;
+
+    // 1. Configure the RCC_CFGR register
+    *pRccCfgReg &= ~(0x3 << 21); //Clear bits 21 and 22
+
+    // 2. Configure PA8 to AF0 mode to behave as MC01 signal
+    // a. Enable the peripheral clock for GPIOA peripheral
+    uint32_t* pRCCAhb1Enr = (uint32_t*)(RCC_BASE_ADDR + 0x30);
+
+    // b. Configure the mode of GPIOA pin 8 as alternative function mode
+    uint32t *pGPIOModeReg = (uint32_t*)(GPIOA_BASE_ADDR + 0x00);
+    *pGPIOModeReg &= ~(0x3 << 16); //clear
+    *pGPIOModeReg |= (0x2 << 16);  //set
+
+    // c. Configure the alternate function register to set the mode 0 for PA8
+    uint32_t* pGPIOAAltFunHighReg = (uint32_t*)(GPIOA_BASE_ADDR + 0X24);
+    *pGPIOAAltFunHighReg &= ~(0XF << 0);
+
     /* Loop forever */
-	for(;;);
+    for (;;);
 }
