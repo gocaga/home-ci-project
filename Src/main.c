@@ -21,6 +21,7 @@
 #define RCC_BASE_ADDR         0x40023800UL
 #define RCC_CFGR_REG_OFFSET   0x08UL
 #define RCC_CFGR_REG_ADDR     (RCC_BASE_ADDR + RCC_CFGR_REG_OFFSET)
+#define GPIOA_BASE_ADDR       0x40020000UL
 
 int main(void)
 {
@@ -36,9 +37,10 @@ int main(void)
     // 2. Configure PA8 to AF0 mode to behave as MC01 signal
     // a. Enable the peripheral clock for GPIOA peripheral
     uint32_t* pRCCAhb1Enr = (uint32_t*) (RCC_BASE_ADDR + 0x30);
+    *pRCCAhb1Enr |= (1 << 0);
 
     // b. Configure the mode of GPIOA pin 8 as alternative function mode
-    uint32t* pGPIOModeReg = (uint32_t*) (GPIOA_BASE_ADDR + 0x00);
+    uint32_t* pGPIOModeReg = (uint32_t*) (GPIOA_BASE_ADDR + 0x00);
     *pGPIOModeReg &= ~(0x3 << 16); //clear
     *pGPIOModeReg |= (0x2 << 16);  //set
 
